@@ -1,0 +1,176 @@
+.product-page {
+    padding-top: 45px;
+    padding-bottom: 70px;
+}
+
+
+.product-detail {
+    display: grid;
+
+    grid-template-columns:
+        1.1fr 1fr;
+
+    gap: 45px;
+
+    background: white;
+
+    padding: 30px;
+
+    border-radius: 16px;
+}
+
+
+/* GALERIJA */
+
+.product-gallery {
+    min-width: 0;
+}
+
+
+.main-product-image {
+    width: 100%;
+
+    aspect-ratio: 1 / 1;
+
+    object-fit: cover;
+
+    border-radius: 12px;
+
+    background: #eee;
+}
+
+
+.product-thumbnails {
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 12px;
+
+    overflow-x: auto;
+}
+
+
+.product-thumbnail {
+    width: 75px;
+    height: 75px;
+
+    object-fit: cover;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    border: 2px solid transparent;
+}
+
+
+.product-thumbnail.active {
+    border-color: #111;
+}
+
+
+/* INFORMACIJE */
+
+.product-detail-info {
+    padding: 10px 0;
+}
+
+
+.product-detail-category {
+    color: #777;
+
+    font-size: 14px;
+
+    margin-bottom: 8px;
+}
+
+
+.product-detail-title {
+    margin: 0 0 15px;
+
+    font-size: clamp(30px, 4vw, 42px);
+}
+
+
+.product-detail-price {
+    font-size: 26px;
+
+    font-weight: bold;
+
+    margin: 20px 0;
+}
+
+
+.product-detail-description {
+    color: #555;
+
+    line-height: 1.7;
+
+    white-space: pre-line;
+
+    margin-bottom: 25px;
+}
+
+
+.back-link {
+    display: inline-block;
+
+    margin-bottom: 20px;
+
+    color: #111;
+
+    text-decoration: none;
+
+    font-weight: bold;
+}
+
+
+.detail-add-button {
+    width: 100%;
+
+    padding: 15px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #111;
+
+    color: white;
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+
+.detail-add-button:hover {
+    opacity: 0.85;
+}
+
+
+@media (max-width: 750px) {
+
+    .product-detail {
+
+        grid-template-columns: 1fr;
+
+        gap: 20px;
+
+        padding: 18px;
+
+    }
+
+    .product-page {
+
+        width: min(
+            100% - 20px,
+            1200px
+        );
+
+    }
+
+}
