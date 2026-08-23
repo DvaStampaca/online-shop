@@ -211,6 +211,22 @@ function renderProducts(category = "Sve") {
         card.className =
             "product";
 
+        card.style.cursor = "pointer";
+
+card.onclick = function(event) {
+
+    if (
+        event.target.closest(".add-button")
+    ) {
+        return;
+    }
+
+    window.location.href =
+        "product.html?id=" +
+        encodeURIComponent(product.id);
+
+};
+
 
         card.innerHTML = `
 
