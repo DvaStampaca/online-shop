@@ -6,67 +6,140 @@
 
     <title>Online Shop</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
-            color: #222;
-        }
-
-        header {
-            background: #111;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        main {
-            max-width: 1100px;
-            margin: 40px auto;
-            padding: 20px;
-            text-align: center;
-        }
-
-        h1 {
-            margin-bottom: 15px;
-        }
-
-        p {
-            color: #666;
-        }
-
-        .status {
-            margin-top: 30px;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-    <header>
-        <h1>Online Shop</h1>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="container header-content">
+
+            <a href="#" class="logo">
+                ONLINE SHOP
+            </a>
+
+            <div class="search">
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Pretraži proizvode..."
+                >
+            </div>
+
+            <button class="cart-button" id="cartButton">
+                🛒 Korpa
+                <span id="cartCount">0</span>
+            </button>
+
+        </div>
     </header>
 
-    <main>
-        <h1>Dobrodošli!</h1>
 
-        <p>
-            Naš online shop uskoro počinje sa radom.
-        </p>
+    <!-- HERO -->
+    <section class="hero">
+        <div class="container">
+            <h1>Dobrodošli u našu prodavnicu</h1>
 
-        <div class="status">
-            <strong>V1 je uspešno pokrenuta 🚀</strong>
+            <p>
+                Pronađite proizvode koji vam trebaju brzo i jednostavno.
+            </p>
         </div>
+    </section>
+
+
+    <!-- CATEGORIES -->
+    <section class="categories-section">
+        <div class="container">
+
+            <h2>Kategorije</h2>
+
+            <div
+                class="categories"
+                id="categories"
+            >
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- PRODUCTS -->
+    <main class="container products-section">
+
+        <div class="section-header">
+
+            <h2>Proizvodi</h2>
+
+            <span id="productCount"></span>
+
+        </div>
+
+        <div
+            class="products"
+            id="products"
+        >
+        </div>
+
     </main>
+
+
+    <!-- CART -->
+    <div
+        class="cart-overlay"
+        id="cartOverlay"
+    ></div>
+
+
+    <aside
+        class="cart"
+        id="cart"
+    >
+
+        <div class="cart-header">
+
+            <h2>Vaša korpa</h2>
+
+            <button id="closeCart">
+                ✕
+            </button>
+
+        </div>
+
+
+        <div
+            class="cart-items"
+            id="cartItems"
+        >
+        </div>
+
+
+        <div class="cart-footer">
+
+            <div class="cart-total">
+
+                <span>Ukupno:</span>
+
+                <strong id="cartTotal">
+                    0 RSD
+                </strong>
+
+            </div>
+
+            <button
+                class="checkout-button"
+                id="checkoutButton"
+            >
+                Nastavi na poručivanje
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- JAVASCRIPT -->
+    <script src="js/app.js"></script>
 
 </body>
 </html>
