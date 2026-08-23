@@ -1,155 +1,110 @@
-const categories = [
-    {
-        id: 1,
-        name: "Piće"
-    },
-    {
-        id: 2,
-        name: "Grickalice"
-    },
-    {
-        id: 3,
-        name: "Slatkiši"
-    },
-    {
-        id: 4,
-        name: "Ostalo"
-    }
-];
-
+/* =========================
+   PROIZVODI
+========================= */
 
 const products = [
+
     {
         id: 1,
-        categoryId: 1,
         name: "Coca Cola",
+        category: "Piće",
         description: "Coca Cola 0.5L",
         price: 150,
-        image: "https://placehold.co/600x600?text=Coca+Cola"
+        image: "https://images.unsplash.com/photo-1554866585-cd94860890b7?auto=format&fit=crop&w=800&q=80"
     },
 
     {
         id: 2,
-        categoryId: 1,
         name: "Fanta",
+        category: "Piće",
         description: "Fanta Orange 0.5L",
         price: 140,
-        image: "https://placehold.co/600x600?text=Fanta"
+        image: "https://images.unsplash.com/photo-1624517452488-04869289c4ca?auto=format&fit=crop&w=800&q=80"
     },
 
     {
         id: 3,
-        categoryId: 2,
         name: "Čips",
+        category: "Grickalice",
         description: "Klasični slani čips",
         price: 180,
-        image: "https://placehold.co/600x600?text=Cips"
+        image: "https://images.unsplash.com/photo-1566478989037-eec170784d0b?auto=format&fit=crop&w=800&q=80"
     },
 
     {
         id: 4,
-        categoryId: 3,
         name: "Čokolada",
+        category: "Slatkiši",
         description: "Mlečna čokolada",
         price: 200,
-        image: "https://placehold.co/600x600?text=Cokolada"
+        image: "https://images.unsplash.com/photo-1575377427642-087cf684f29d?auto=format&fit=crop&w=800&q=80"
     },
 
     {
         id: 5,
-        categoryId: 2,
-        name: "Smoki",
-        description: "Kikiriki flips",
-        price: 120,
-        image: "https://placehold.co/600x600?text=Smoki"
+        name: "Voda",
+        category: "Piće",
+        description: "Prirodna mineralna voda 0.5L",
+        price: 80,
+        image: "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=800&q=80"
     },
 
     {
         id: 6,
-        categoryId: 3,
-        name: "Bombone",
-        description: "Voćne bombone",
-        price: 100,
-        image: "https://placehold.co/600x600?text=Bombone"
+        name: "Kikiriki",
+        category: "Grickalice",
+        description: "Pečeni slani kikiriki",
+        price: 160,
+        image: "https://images.unsplash.com/photo-1567892737950-30c4db37cd89?auto=format&fit=crop&w=800&q=80"
     }
+
 ];
 
 
+/* =========================
+   KORPA
+========================= */
+
 let cart = [];
 
-let selectedCategory = null;
+
+/* =========================
+   FORMAT CENE
+========================= */
+
+function formatPrice(price) {
+
+    return price.toLocaleString("sr-RS") + " RSD";
+
+}
 
 
-/* DOM */
+/* =========================
+   KATEGORIJE
+========================= */
 
-const categoriesContainer =
-    document.getElementById("categories");
+function getCategories() {
 
-const productsContainer =
-    document.getElementById("products");
+    const categories = products.map(
+        product => product.category
+    );
 
-const productCount =
-    document.getElementById("productCount");
+    return [
+        "Sve",
+        ...new Set(categories)
+    ];
 
-const searchInput =
-    document.getElementById("searchInput");
+}
 
-const cartButton =
-    document.getElementById("cartButton");
-
-const cartElement =
-    document.getElementById("cart");
-
-const closeCart =
-    document.getElementById("closeCart");
-
-const cartItems =
-    document.getElementById("cartItems");
-
-const cartCount =
-    document.getElementById("cartCount");
-
-const cartTotal =
-    document.getElementById("cartTotal");
-
-const checkoutButton =
-    document.getElementById("checkoutButton");
-
-
-/* CATEGORIES */
 
 function renderCategories() {
 
-    categoriesContainer.innerHTML = "";
+    const container =
+        document.getElementById("categories");
 
-    const allButton =
-        document.createElement("button");
+    container.innerHTML = "";
 
-    allButton.className =
-        "category-button active";
-
-    allButton.textContent =
-        "Svi proizvodi";
-
-    allButton.addEventListener("click", () => {
-
-        selectedCategory = null;
-
-        document
-            .querySelectorAll(".category-button")
-            .forEach(button =>
-                button.classList.remove("active")
-            );
-
-        allButton.classList.add("active");
-
-        renderProducts();
-    });
-
-    categoriesContainer.appendChild(allButton);
-
-
-    categories.forEach(category => {
+    getCategories().forEach(category => {
 
         const button =
             document.createElement("button");
@@ -157,96 +112,67 @@ function renderCategories() {
         button.className =
             "category-button";
 
-        button.textContent =
-            category.name;
+        if (category === "Sve") {
+            button.classList.add("active");
+        }
 
-        button.addEventListener("click", () => {
+        button.textContent = category;
 
-            selectedCategory =
-                category.id;
+        button.onclick = () => {
 
             document
                 .querySelectorAll(".category-button")
-                .forEach(button =>
-                    button.classList.remove("active")
+                .forEach(btn =>
+                    btn.classList.remove("active")
                 );
 
             button.classList.add("active");
 
-            renderProducts();
-        });
+            renderProducts(category);
 
-        categoriesContainer.appendChild(button);
+        };
+
+        container.appendChild(button);
 
     });
+
 }
 
 
-/* PRODUCTS */
+/* =========================
+   PROIZVODI
+========================= */
 
-function renderProducts() {
+function renderProducts(category = "Sve") {
 
-    const search =
-        searchInput.value
-            .toLowerCase()
-            .trim();
+    const container =
+        document.getElementById("products");
 
+    let filteredProducts = products;
 
-    let filteredProducts =
-        products.filter(product => {
+    if (category !== "Sve") {
 
-            const matchesCategory =
-                selectedCategory === null ||
-                product.categoryId === selectedCategory;
+        filteredProducts =
+            products.filter(
+                product =>
+                    product.category === category
+            );
 
-
-            const matchesSearch =
-                product.name
-                    .toLowerCase()
-                    .includes(search) ||
-
-                product.description
-                    .toLowerCase()
-                    .includes(search);
-
-
-            return matchesCategory &&
-                   matchesSearch;
-        });
-
-
-    productsContainer.innerHTML = "";
-
-    productCount.textContent =
-        `${filteredProducts.length} proizvoda`;
-
-
-    if (filteredProducts.length === 0) {
-
-        productsContainer.innerHTML = `
-            <p>
-                Nema pronađenih proizvoda.
-            </p>
-        `;
-
-        return;
     }
+
+    container.innerHTML = "";
+
+    document.getElementById("product-count")
+        .textContent =
+        `${filteredProducts.length} proizvoda`;
 
 
     filteredProducts.forEach(product => {
 
-        const category =
-            categories.find(
-                category =>
-                    category.id === product.categoryId
-            );
-
-
         const card =
             document.createElement("article");
 
-        card.className =
-            "product-card";
+        card.className = "product";
 
 
         card.innerHTML = `
@@ -255,13 +181,10 @@ function renderProducts() {
                 class="product-image"
                 src="${product.image}"
                 alt="${product.name}"
+                loading="lazy"
             >
 
             <div class="product-info">
-
-                <div class="product-category">
-                    ${category ? category.name : ""}
-                </div>
 
                 <h3 class="product-name">
                     ${product.name}
@@ -279,55 +202,58 @@ function renderProducts() {
 
                     <button
                         class="add-button"
-                        onclick="addToCart(${product.id})"
-                    >
+                        onclick="addToCart(${product.id})">
+
                         Dodaj
+
                     </button>
 
                 </div>
 
             </div>
+
         `;
 
 
-        productsContainer.appendChild(card);
+        container.appendChild(card);
 
     });
+
 }
 
 
-/* CART */
+/* =========================
+   DODAVANJE U KORPU
+========================= */
 
 function addToCart(productId) {
 
     const product =
         products.find(
-            product =>
-                product.id === productId
+            product => product.id === productId
         );
 
-
-    if (!product) {
-        return;
-    }
+    if (!product) return;
 
 
-    const existingItem =
+    const existing =
         cart.find(
-            item =>
-                item.productId === productId
+            item => item.id === productId
         );
 
 
-    if (existingItem) {
+    if (existing) {
 
-        existingItem.quantity++;
+        existing.quantity++;
 
     } else {
 
         cart.push({
-            productId: productId,
+
+            ...product,
+
             quantity: 1
+
         });
 
     }
@@ -335,254 +261,367 @@ function addToCart(productId) {
 
     updateCart();
 
-    openCart();
 }
 
 
-function changeQuantity(productId, change) {
+/* =========================
+   PROMENA KOLIČINE
+========================= */
+
+function changeQuantity(productId, amount) {
 
     const item =
         cart.find(
-            item =>
-                item.productId === productId
+            item => item.id === productId
         );
 
-
-    if (!item) {
-        return;
-    }
+    if (!item) return;
 
 
-    item.quantity += change;
+    item.quantity += amount;
 
 
     if (item.quantity <= 0) {
 
         cart =
             cart.filter(
-                item =>
-                    item.productId !== productId
+                item => item.id !== productId
             );
 
     }
 
 
     updateCart();
+
 }
 
 
-function removeFromCart(productId) {
+/* =========================
+   UKUPNA CENA
+========================= */
 
-    cart =
-        cart.filter(
-            item =>
-                item.productId !== productId
-        );
+function getCartTotal() {
 
+    return cart.reduce(
 
-    updateCart();
+        (total, item) =>
+
+            total +
+            item.price * item.quantity,
+
+        0
+
+    );
+
 }
 
+
+/* =========================
+   BROJ PROIZVODA
+========================= */
+
+function getCartCount() {
+
+    return cart.reduce(
+
+        (total, item) =>
+
+            total + item.quantity,
+
+        0
+
+    );
+
+}
+
+
+/* =========================
+   PRIKAZ KORPE
+========================= */
 
 function updateCart() {
 
-    cartItems.innerHTML = "";
+    document.getElementById("cart-count")
+        .textContent =
+        getCartCount();
+
+
+    document.getElementById("cart-total")
+        .textContent =
+        formatPrice(getCartTotal());
+
+
+    document.getElementById("checkout-total")
+        .textContent =
+        formatPrice(getCartTotal());
+
+
+    renderCart();
+
+}
+
+
+/* =========================
+   RENDER KORPE
+========================= */
+
+function renderCart() {
+
+    const container =
+        document.getElementById("cart-items");
 
 
     if (cart.length === 0) {
 
-        cartItems.innerHTML = `
+        container.innerHTML = `
+
             <div class="empty-cart">
+
                 Korpa je prazna.
+
             </div>
+
         `;
 
-    } else {
-
-        cart.forEach(item => {
-
-            const product =
-                products.find(
-                    product =>
-                        product.id === item.productId
-                );
-
-
-            if (!product) {
-                return;
-            }
-
-
-            const element =
-                document.createElement("div");
-
-            element.className =
-                "cart-item";
-
-
-            element.innerHTML = `
-
-                <img
-                    class="cart-item-image"
-                    src="${product.image}"
-                    alt="${product.name}"
-                >
-
-                <div class="cart-item-info">
-
-                    <div class="cart-item-name">
-                        ${product.name}
-                    </div>
-
-                    <div class="cart-item-price">
-                        ${formatPrice(product.price)}
-                    </div>
-
-                    <div class="quantity">
-
-                        <button
-                            onclick="changeQuantity(${product.id}, -1)"
-                        >
-                            −
-                        </button>
-
-                        <span>
-                            ${item.quantity}
-                        </span>
-
-                        <button
-                            onclick="changeQuantity(${product.id}, 1)"
-                        >
-                            +
-                        </button>
-
-                        <button
-                            class="remove-item"
-                            onclick="removeFromCart(${product.id})"
-                        >
-                            Obriši
-                        </button>
-
-                    </div>
-
-                </div>
-            `;
-
-
-            cartItems.appendChild(element);
-
-        });
+        return;
 
     }
 
 
-    const totalQuantity =
-        cart.reduce(
-            (total, item) =>
-                total + item.quantity,
-            0
-        );
+    container.innerHTML = "";
 
 
-    const totalPrice =
-        cart.reduce(
-            (total, item) => {
+    cart.forEach(item => {
 
-                const product =
-                    products.find(
-                        product =>
-                            product.id === item.productId
-                    );
+        const row =
+            document.createElement("div");
 
-                return total +
-                    (product
-                        ? product.price * item.quantity
-                        : 0);
-
-            },
-            0
-        );
+        row.className = "cart-item";
 
 
-    cartCount.textContent =
-        totalQuantity;
+        row.innerHTML = `
 
-    cartTotal.textContent =
-        formatPrice(totalPrice);
+            <img
+                class="cart-item-image"
+                src="${item.image}"
+                alt="${item.name}"
+            >
+
+            <div class="cart-item-info">
+
+                <h3>
+                    ${item.name}
+                </h3>
+
+                <p>
+                    ${formatPrice(item.price)}
+                </p>
+
+            </div>
+
+
+            <div class="quantity">
+
+                <button
+                    onclick="changeQuantity(${item.id}, -1)">
+
+                    −
+
+                </button>
+
+                <strong>
+                    ${item.quantity}
+                </strong>
+
+                <button
+                    onclick="changeQuantity(${item.id}, 1)">
+
+                    +
+
+                </button>
+
+            </div>
+
+        `;
+
+
+        container.appendChild(row);
+
+    });
+
 }
 
 
-/* CART OPEN / CLOSE */
+/* =========================
+   OTVORI KORPU
+========================= */
 
 function openCart() {
 
-    cartElement.classList.add("open");
+    document
+        .getElementById("cart-modal")
+        .classList.add("show");
 
 }
 
 
-function closeCartPanel() {
+/* =========================
+   ZATVORI KORPU
+========================= */
 
-    cartElement.classList.remove("open");
+function closeCart() {
+
+    document
+        .getElementById("cart-modal")
+        .classList.remove("show");
 
 }
 
 
-cartButton.addEventListener(
-    "click",
-    openCart
-);
+/* =========================
+   CHECKOUT
+========================= */
 
+function openCheckout() {
 
-closeCart.addEventListener(
-    "click",
-    closeCartPanel
-);
+    if (cart.length === 0) {
 
+        alert("Korpa je prazna.");
 
-/* SEARCH */
-
-searchInput.addEventListener(
-    "input",
-    renderProducts
-);
-
-
-/* CHECKOUT */
-
-checkoutButton.addEventListener(
-    "click",
-    () => {
-
-        if (cart.length === 0) {
-
-            alert(
-                "Korpa je prazna."
-            );
-
-            return;
-        }
-
-
-        alert(
-            "Sledeći korak biće forma za poručivanje."
-        );
+        return;
 
     }
-);
 
 
-/* PRICE */
+    closeCart();
 
-function formatPrice(price) {
 
-    return new Intl.NumberFormat(
-        "sr-RS"
-    ).format(price) + " RSD";
+    document
+        .getElementById("checkout-modal")
+        .classList.add("show");
+
 }
 
 
-/* START */
+function closeCheckout() {
+
+    document
+        .getElementById("checkout-modal")
+        .classList.remove("show");
+
+}
+
+
+/* =========================
+   PORUDŽBINA
+========================= */
+
+document
+    .getElementById("order-form")
+    .addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+
+        const order = {
+
+            customer: {
+
+                name:
+                    document
+                        .getElementById("customer-name")
+                        .value,
+
+                phone:
+                    document
+                        .getElementById("customer-phone")
+                        .value,
+
+                address:
+                    document
+                        .getElementById("customer-address")
+                        .value,
+
+                city:
+                    document
+                        .getElementById("customer-city")
+                        .value,
+
+                note:
+                    document
+                        .getElementById("customer-note")
+                        .value
+
+            },
+
+
+            products: cart.map(item => ({
+
+                id: item.id,
+
+                name: item.name,
+
+                quantity: item.quantity,
+
+                price: item.price
+
+            })),
+
+
+            total: getCartTotal(),
+
+            createdAt:
+                new Date().toISOString()
+
+        };
+
+
+        console.log(
+            "NOVA PORUDŽBINA:",
+            order
+        );
+
+
+        /*
+            GOOGLE SHEETS ĆEMO POVEZATI OVDE.
+        */
+
+
+        closeCheckout();
+
+
+        document
+            .getElementById("success-modal")
+            .classList.add("show");
+
+
+        cart = [];
+
+
+        updateCart();
+
+
+        this.reset();
+
+    });
+
+
+/* =========================
+   SUCCESS
+========================= */
+
+function closeSuccess() {
+
+    document
+        .getElementById("success-modal")
+        .classList.remove("show");
+
+}
+
+
+/* =========================
+   POKRETANJE
+========================= */
 
 renderCategories();
 
