@@ -731,4 +731,67 @@ document.body.appendChild(
    START
 ========================= */
 
-loadProducts();
+loadProducts().then(() => {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const productId =
+        params.get("add");
+
+
+    if (!productId) {
+        return;
+    }
+
+
+    const product =
+        products.find(
+            product =>
+                String(product.id) ===
+                String(productId)
+        );
+
+
+    if (!product) {
+        return;
+    }
+
+
+    const existing =
+        cart.find(
+            item =>
+                String(item.id) ===
+                String(productId)
+        );
+
+
+    if (existing) {
+
+        existing.quantity++;
+
+    } else {
+
+        cart.push({
+
+            ...product,
+
+            quantity: 1
+
+        });
+
+    }
+
+
+    updateCart();
+
+
+    window.history.replaceState(
+        {},
+        document.title,
+        "index.html"
+    );
+
+});
