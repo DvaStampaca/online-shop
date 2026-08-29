@@ -361,22 +361,262 @@ async function refreshProductsInBackground() {
    KATEGORIJE
 ========================= */
 
-function getCategories() {
+const CATEGORY_CACHE_KEY =
+    "online_shop_categories";
 
-    return [
+const CATEGORY_CACHE_TIME_KEY =
+    "online_shop_categories_time";
 
-        "Sve",
 
-        ...new Set(
+function getCachedCategories() {
 
-            products.map(
-                product =>
-                    product.category
+    try {
+
+        const cached =
+            localStorage.getItem(
+                CATEGORY_CACHE_KEY
+            );
+
+        if (!cached) {
+
+            return null;
+
+        }
+
+        return JSON.parse(cached);
+
+    } catch (error) {
+
+        console.error(
+            "Greška pri čitanju kategorija iz keša:",
+            error
+        );
+
+        return null;
+
+    }
+
+}
+
+
+function saveCategoriesToCache(
+    categoriesData
+) {
+
+    try {
+
+        localStorage.setItem(
+            CATEGORY_CACHE_KEY,
+            JSON.stringify(
+                categoriesData
             )
+        );
 
-        )
+        localStorage.setItem(
+            CATEGORY_CACHE_TIME_KEY,
+            Date.now().toString()
+        );
 
-    ];
+    } catch (error) {
+
+        console.error(
+            "Greška pri čuvanju kategorija:",
+            error
+        );
+
+    }
+
+}
+
+
+function isCategoryCacheFresh() {
+
+    try {
+
+        const cacheTime =
+            Number(
+                localStorage.getItem(
+                    CATEGORY_CACHE_TIME_KEY
+                )
+            );
+
+        if (!cacheTime) {
+
+            return false;
+
+        }
+
+        return (
+            Date.now() - cacheTime <
+            CACHE_DURATION
+        );
+
+    } catch (error) {
+
+        return false;
+
+    }
+
+}
+
+
+async function fetchCategoriesFromServer() {
+
+    const response =
+        await fetch(
+            API_URL +
+            "?action=categories"
+        );
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Server nije dostupan."
+        );
+
+    }
+
+    const data =
+        await response.json();
+
+    if (!data.success) {
+
+        throw new Error(
+            data.error ||
+            "Greška pri učitavanju kategorija."
+        );
+
+    }
+
+    return data.categories || [];
+
+}
+
+
+let categories = [];
+
+
+function setCategories(
+    categoriesData
+) {
+
+    categories =
+        categoriesData || [];
+
+    renderCategories();
+
+}
+
+
+async function loadCategories() {
+
+    const cachedCategories =
+        getCachedCategories();
+
+
+    /*
+     * Ako imamo keš,
+     * prikaži kategorije ODMAH.
+     */
+
+    if (
+        cachedCategories &&
+        cachedCategories.length
+    ) {
+
+        setCategories(
+            cachedCategories
+        );
+
+    }
+
+
+    /*
+     * Ako je keš svež,
+     * osveži podatke u pozadini.
+     */
+
+    if (
+        cachedCategories &&
+        isCategoryCacheFresh()
+    ) {
+
+        refreshCategoriesInBackground();
+
+        return;
+
+    }
+
+
+    /*
+     * Ako nema keša ili je star,
+     * uzmi sveže kategorije.
+     */
+
+    try {
+
+        const freshCategories =
+            await fetchCategoriesFromServer();
+
+        saveCategoriesToCache(
+            freshCategories
+        );
+
+        setCategories(
+            freshCategories
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Greška pri učitavanju kategorija:",
+            error
+        );
+
+        /*
+         * Ako imamo stari keš,
+         * njega ostavljamo.
+         */
+
+        if (
+            cachedCategories &&
+            cachedCategories.length
+        ) {
+
+            setCategories(
+                cachedCategories
+            );
+
+        }
+
+    }
+
+}
+
+
+async function refreshCategoriesInBackground() {
+
+    try {
+
+        const freshCategories =
+            await fetchCategoriesFromServer();
+
+        saveCategoriesToCache(
+            freshCategories
+        );
+
+        setCategories(
+            freshCategories
+        );
+
+    } catch (error) {
+
+        console.warn(
+            "Pozadinsko osvežavanje kategorija nije uspelo:",
+            error
+        );
+
+    }
 
 }
 
@@ -388,43 +628,99 @@ function renderCategories() {
             "categories"
         );
 
-
     if (!container) {
 
         return;
 
     }
 
-
     container.innerHTML = "";
 
 
-    getCategories().forEach(
+    /*
+     * Uvek imamo kategoriju "Sve".
+     */
+
+    const allButton =
+        document.createElement(
+            "button"
+        );
+
+    allButton.className =
+        "category-button active";
+
+    allButton.textContent =
+        "Sve";
+
+
+    allButton.onclick = () => {
+
+        document
+            .querySelectorAll(
+                ".category-button"
+            )
+            .forEach(
+                btn =>
+                    btn.classList.remove(
+                        "active"
+                    )
+            );
+
+        allButton.classList.add(
+            "active"
+        );
+
+        renderProducts("Sve");
+
+    };
+
+
+    container.appendChild(
+        allButton
+    );
+
+
+    /*
+     * Kategorije dolaze direktno
+     * iz Categories Google Sheeta.
+     */
+
+    categories.forEach(
         category => {
+
+            /*
+             * Apps Script vraća objekat:
+             *
+             * {
+             *   id,
+             *   name,
+             *   active
+             * }
+             */
+
+            const categoryName =
+                typeof category === "string"
+                    ? category
+                    : category.name;
+
+
+            if (!categoryName) {
+
+                return;
+
+            }
+
 
             const button =
                 document.createElement(
                     "button"
                 );
 
-
             button.className =
                 "category-button";
 
-
-            if (
-                category === "Sve"
-            ) {
-
-                button.classList.add(
-                    "active"
-                );
-
-            }
-
-
             button.textContent =
-                category;
+                categoryName;
 
 
             button.onclick = () => {
@@ -447,7 +743,7 @@ function renderCategories() {
 
 
                 renderProducts(
-                    category
+                    categoryName
                 );
 
             };
@@ -461,8 +757,6 @@ function renderCategories() {
     );
 
 }
-
-
 /* =========================
    PROIZVODI
 ========================= */
@@ -1351,10 +1645,11 @@ function addPendingProductToCart() {
    START
 ========================= */
 
-loadProducts().then(
-    () => {
+Promise.all([
+    loadProducts(),
+    loadCategories()
+]).then(() => {
 
-        addPendingProductToCart();
+    addPendingProductToCart();
 
-    }
-);
+});
