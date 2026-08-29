@@ -108,9 +108,13 @@ textarea {
 
 
 /* CATEGORIES */
+.spajac {
+    display: flex;
+}
 
 .categories-section {
     padding: 40px 0 15px;
+    width: 15%;
 }
 
 .categories-section h2,
@@ -150,6 +154,7 @@ textarea {
 
 .products-section {
     padding: 25px 0 70px;
+    width: 85%;
 }
 
 .section-title {
