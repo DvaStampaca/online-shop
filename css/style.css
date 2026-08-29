@@ -42,7 +42,7 @@ textarea {
     min-height: 70px;
 
     display: flex;
-    align-items: center;
+    align-items: left;
     justify-content: space-between;
 }
 
