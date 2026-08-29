@@ -113,7 +113,7 @@ textarea {
 }
 
 .categories-section {
-    padding: 40px 5% 15px;
+    padding: 40px 5% 40px;
     width: 15%;
 }
 
@@ -153,7 +153,7 @@ textarea {
 /* PRODUCTS */
 
 .products-section {
-    padding: 25px 5% 70px;
+    padding: 40px 0 80px;
     width: 85%;
 }
 
